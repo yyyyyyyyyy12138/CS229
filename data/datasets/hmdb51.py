@@ -40,7 +40,8 @@ class HMDB51Dataset(Dataset):
 
     def get_videos(self, files: list, train: bool, classes: dict) -> list:
         """
-        output: list of tuples(video path name, class label)
+        .txt file path --> class name, video name/path, used to train or test, class label
+        output: list of tuples(video path, class label)
         """
         dataset = []
         for f in files:
@@ -60,14 +61,23 @@ class HMDB51Dataset(Dataset):
         return len(self.dataset)
 
     def __getitem__(self, idx):
+        """
+        Video --> a middle frame (target frame) --> transform
+        Output: tuple -- image(tensor), label(int)
+        """
         path, label = self.dataset[idx]
         assert os.path.exists(path)
+
+        # get the metadata from the video
         probe = ffmpeg.probe(path)
         video_streams = probe["streams"][0]
+        # get total number of frames in the video
         num_frames = int(video_streams["nb_frames"])
         width = int(video_streams['width'])
         height = int(video_streams['height'])
+        # get the mid frame index
         target_frame = num_frames//2
+        # get the mid frame image
         out, _ = (
             ffmpeg
             .input(path)
@@ -75,14 +85,16 @@ class HMDB51Dataset(Dataset):
             .output('pipe:', vframes=1, format='rawvideo', pix_fmt='rgb24',loglevel="quiet")
             .run(capture_stdout=True)
         )
-
+        # turn the image type to numpy
         image = (
             np
             .frombuffer(out, np.uint8)
             .reshape([-1, height, width, 3])
         )
         image = image[0]
+        # turn the image type to PIL (for transform purpose)
         image = im.fromarray(image)
+        # transform image:  resize, to Tensor, normalize
         if self.transform:
             image = self.transform(image)
         return image, label

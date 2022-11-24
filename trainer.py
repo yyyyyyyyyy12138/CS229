@@ -18,13 +18,15 @@ class Trainer:
         # training
         self.model.net.train()  # switch to train mode
         for i, data in enumerate(self.data.training_loader):
+            # pass data to device
             inputs, labels = data[0].to(self.model.device), data[1].to(self.model.device)
             # Zero your gradients for every batch!
             self.model.optimizer.zero_grad()
 
             # performs an inference, get predictions from the model of an input batch
             logits = self.model.net(inputs)
-            preds = torch.argmax(logits, dim=1)  # get predicted class
+            # get predicted class
+            preds = torch.argmax(logits, dim=1)
 
             # calculate accuracy
             acc = torch.sum(preds == labels) / preds.shape[0]
@@ -38,6 +40,7 @@ class Trainer:
             # Adjust learning weights
             self.model.optimizer.step()
         accs = torch.Tensor(accs)
+        # calculate epoch accuracy (weighted average)
         batch_sizes = torch.Tensor(batch_sizes)
         epoch_acc = (torch.dot(accs, batch_sizes)).item() / torch.sum(batch_sizes)
         epoch_acc = epoch_acc.item()
@@ -47,7 +50,7 @@ class Trainer:
         # testing current epoch
         accs = []
         batch_sizes = []
-        self.model.eval()  # switch to test mode
+        self.model.net.eval()  # switch to test mode
         with torch.no_grad():
             for k, data in enumerate(self.data.test_loader):
                 inputs, labels = data[0].to(self.model.device), data[1].to(self.model.device)

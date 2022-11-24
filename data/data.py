@@ -3,6 +3,8 @@ import torchvision.transforms as transforms
 from .datasets import HMDB51Dataset
 
 
+# define transformation, get train/test set using dataset class in data/datasets (e.g., HMDB51Dataset)
+# call torch dataloader with arguments (train/test set, batch size, ....)
 class Data:
     def __init__(self, root):
         transform = transforms.Compose([
