@@ -9,6 +9,9 @@ class Trainer:
 
     def fit(self):
         for i in range(self.num_epochs):
+            param_groups = self.model.optimizer.param_groups
+            for param_group in param_groups:
+                print(param_group['lr'])
             self.train_epoch(i)
             self.test_epoch(i)
 
@@ -39,6 +42,9 @@ class Trainer:
                 print(f"[Train] Epoch {epoch} iteration{i}: loss={loss}, accuracy={acc}")
             # Adjust learning weights
             self.model.optimizer.step()
+
+        # learning rate decay scheduler
+        self.model.scheduler.step()
         accs = torch.Tensor(accs)
         # calculate epoch accuracy (weighted average)
         batch_sizes = torch.Tensor(batch_sizes)
