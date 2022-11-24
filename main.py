@@ -6,9 +6,11 @@ import argparse
 parser = argparse.ArgumentParser(description='Baseline Training')
 parser.add_argument('--lr', default=0.001, type=float, help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
+parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
 parser.add_argument('--root', default="/home/ssd/data", type=str, help='root directory')
 parser.add_argument('--pretrain', action="store_true", help='pretrain or not')
+parser.add_argument("--debug", action="store_true",help="debug mode or not")
+parser.add_argument('--net', default="resnet18", type=str, help="architecture")
 args = parser.parse_args()
 
 

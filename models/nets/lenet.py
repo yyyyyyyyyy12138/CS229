@@ -22,3 +22,9 @@ class LeNet(nn.Module):
         x = self.fc3(x)
         return x
 
+
+def get_lenet(num_classes, pretrain):
+    assert pretrain is False
+    return LeNet(num_classes)
+
+

@@ -56,7 +56,7 @@ class Trainer:
                 inputs, labels = data[0].to(self.model.device), data[1].to(self.model.device)
 
                 # performs an inference, get predictions from the model of an input batch
-                logits = self.model(inputs)
+                logits = self.model.net(inputs)
                 preds = torch.argmax(logits, dim=1)  # get predicted class
 
                 # calculate accuracy
