@@ -1,7 +1,8 @@
-from trainer import Trainer
+import argparse
+
 from data import Data
 from models import Model
-import argparse
+from trainer import Trainer
 
 parser = argparse.ArgumentParser(description='Baseline Training')
 parser.add_argument('--lr', default=0.001, type=float, help='initial learning rate')
@@ -11,6 +12,9 @@ parser.add_argument('--root', default="/home/ssd/data", type=str, help='root dir
 parser.add_argument('--pretrain', action="store_true", help='pretrain or not')
 parser.add_argument("--debug", action="store_true",help="debug mode or not")
 parser.add_argument('--net', default="resnet18", type=str, help="architecture")
+parser.add_argument('--log-freq', default=10, type=int, help="log and print frequency")
+parser.add_argument('--log-cnt', default=10, type=int, help="total number of logged images per epoch")
+parser.add_argument('--batch-size', default=64, type=int, help="number of images per batch")
 args = parser.parse_args()
 
 

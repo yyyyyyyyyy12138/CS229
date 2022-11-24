@@ -40,6 +40,6 @@ class Data:
         training_set = HMDB51Dataset(args.root, "1", train=True, transform=train_transform)
         test_set = HMDB51Dataset(args.root, "2", train=False, transform=test_transform)
 
-        self.training_loader = torch.utils.data.DataLoader(training_set, batch_size=64, shuffle=not args.debug, num_workers=4)
-        self.test_loader = torch.utils.data.DataLoader(test_set, batch_size=64, shuffle=False, num_workers=4)
+        self.training_loader = torch.utils.data.DataLoader(training_set, batch_size=args.batch_size, shuffle=not args.debug, num_workers=4)
+        self.test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=False, num_workers=4)
         self.num_classes = training_set.num_classes
