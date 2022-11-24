@@ -2,10 +2,10 @@ import torch
 
 
 class Trainer:
-    def __init__(self, model, data, num_epochs):
+    def __init__(self, model, data, args):
         self.model = model
         self.data = data
-        self.num_epochs = num_epochs
+        self.num_epochs = args.epochs
 
     def fit(self):
         for i in range(self.num_epochs):

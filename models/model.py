@@ -5,10 +5,11 @@ from .nets import LeNet
 
 
 class Model:
-    def __init__(self, lr, momentum, num_classes):
+    # def __init__(self, lr, momentum, num_classes):
+    def __init__(self, args, num_classes):
         self.device = torch.device("cuda:0")
         # models/nets/lenet.py: class LeNet
         self.net = LeNet(num_classes)
         self.net.to(self.device)
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = optim.SGD(self.net.parameters(), lr, momentum)
+        self.optimizer = optim.SGD(self.net.parameters(), args.lr, args.momentum)
