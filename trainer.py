@@ -1,4 +1,5 @@
 import torch
+import torchmetrics
 import wandb
 
 
@@ -42,8 +43,11 @@ class Trainer:
     def train_epoch(self, epoch):
         accs = []
         batch_sizes = []
-        # training
-        self.model.net.train()  # switch to train mode
+        acc_metric = torchmetrics.Accuracy().to(self.model.device)
+        f1_metric = torchmetrics.F1Score(self.data.num_classes).to(self.model.device)
+
+        # training: switch to train mode
+        self.model.net.train()
         for i, data in enumerate(self.data.training_loader):
             # pass data to device
             inputs, labels = data[0].to(self.model.device), data[1].to(self.model.device)
@@ -56,7 +60,8 @@ class Trainer:
             preds = torch.argmax(logits, dim=1)
 
             # calculate accuracy
-            acc = torch.sum(preds == labels) / preds.shape[0]
+            acc = acc_metric(preds, labels)
+            f1 = f1_metric(preds, labels)    # TODO: add F1 score for each epoch, check if need reset or not
             accs.append(acc)
             batch_sizes.append(labels.shape[0])
             # Compute the loss and its gradients
@@ -68,6 +73,10 @@ class Trainer:
                 wandb.log({"Train Loss": loss, "Train Accuracy": acc})
             # Adjust learning weights
             self.model.optimizer.step()
+
+        # reset accuracy metric
+        acc_metric.reset()
+        # f1_metric.reset()
 
         # learning rate decay scheduler
         self.model.scheduler.step()
@@ -86,7 +95,10 @@ class Trainer:
         # testing current epoch
         accs = []
         batch_sizes = []
-        self.model.net.eval()  # switch to test mode
+        acc_metric = torchmetrics.Accuracy().to(self.model.device)
+
+        # test: switch to test mode
+        self.model.net.eval()
         with torch.no_grad():
             # log_img_freq = len(self.data.test_loader) // self.log_cnt
             for i, data in enumerate(self.data.test_loader):
@@ -107,9 +119,12 @@ class Trainer:
                 #     wandb.log({"Baseline_predictions": my_table})
 
                 # calculate accuracy
-                acc = torch.sum(preds == labels) / preds.shape[0]
+                acc = acc_metric(preds, labels)
                 accs.append(acc)
                 batch_sizes.append(labels.shape[0])
+
+            # reset accuracy metric
+            acc_metric.reset()
 
             accs = torch.Tensor(accs)
             batch_sizes = torch.Tensor(batch_sizes)
