@@ -1,7 +1,8 @@
 import torch
 import torchvision.transforms as transforms
-from .datasets import HMDB51Dataset
+from .datasets import HMDB51Dataset, MOMADataset
 from torchvision.models import ResNet18_Weights
+
 
 # if debug mode
 def len_debug(self):
@@ -34,12 +35,22 @@ class Data:
                 transforms.Normalize((0.5,), (0.5,))
             ])
 
+        # if in debug mode, reduces the length of dataset to len_debug
         if args.debug:
-            HMDB51Dataset.__len__ = len_debug
-            HMDB51Dataset.__len__ = len_debug
-        training_set = HMDB51Dataset(args.root, "1", train=True, transform=train_transform)
-        test_set = HMDB51Dataset(args.root, "2", train=False, transform=test_transform)
+            if args.dataset == "hmdb51":
+                HMDB51Dataset.__len__ = len_debug
+            else:
+                MOMADataset.__len__ = len_debug
 
+        # get training/test set
+        if args.dataset == "hmdb51":
+            training_set = HMDB51Dataset(args.root, "1", train=True, transform=train_transform)
+            test_set = HMDB51Dataset(args.root, "2", train=False, transform=test_transform)
+        else:
+            training_set = MOMADataset(args.root, train=True, transform=train_transform)
+            test_set = MOMADataset(args.root, train=False, transform=test_transform)
+
+        # get training/test loader
         self.training_loader = torch.utils.data.DataLoader(training_set, batch_size=args.batch_size, shuffle=not args.debug, num_workers=4)
         self.test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=False, num_workers=4)
         self.num_classes = training_set.num_classes

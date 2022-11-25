@@ -41,7 +41,7 @@ class HMDB51Dataset(Dataset):
     def get_videos(self, files: list, train: bool, classes: dict) -> list:
         """
         .txt file path --> class name, video name/path, used to train or test, class label
-        output: list of tuples(video path, class label)
+        output: list of tuples [(video path, class label)]
         """
         dataset = []
         for f in files:
