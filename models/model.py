@@ -14,6 +14,6 @@ class Model:
         self.net.to(self.device)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(self.net.parameters(), args.lr, args.momentum)
-        self.scheduler = StepLR(self.optimizer, step_size=7, gamma=0.1)  # TODO: argparse
+        self.scheduler = StepLR(self.optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)
 
 

@@ -23,6 +23,7 @@ class Trainer:
             start_epoch = ckpt['epoch']  # start from prev epoch
             self.model.net.load_state_dict(ckpt['model_state_dict'])
             self.model.optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+            self.model.scheduler.load_state_dict(ckpt['lr_scheduler_state_dict'])
 
         # train and test model
         for i in range(start_epoch, self.num_epochs):
@@ -31,11 +32,11 @@ class Trainer:
 
             # save checkpoints per ckpt frequency
             if i % self.ckpt_freq == 0:
-                # TODO: save lr scheduler
                 torch.save({
                     'epoch': i,
                     'model_state_dict': self.model.net.state_dict(),
                     'optimizer_state_dict': self.model.optimizer.state_dict(),
+                    'lr_scheduler_state_dict': self.model.scheduler.state_dict(),
                 }, self.ckpt_path)
 
     def train_epoch(self, epoch):
