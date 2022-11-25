@@ -3,28 +3,34 @@ from torch.utils.data import Dataset, DataLoader
 import ffmpeg
 import os
 import numpy as np
-from PIL import Image as im
+from PIL import Image
+
 
 class MOMADataset(Dataset):
     def __init__(self, root_dir: str, train: bool, transform=None):
         path = os.path.join(root_dir, "moma-lrg")
         moma = momaapi.MOMA(path)
         self.path = path
-        self.num_classes = moma.num_classes()
+        self.num_classes = moma.num_classes["act"]
         self.transform = transform
 
-        # get classes ids for activity and train/test
+        # get activity instance IDs (train+val or test)
         if train:
-            ids = moma.get_cids("act", "train")
+            act_ids = moma.get_ids_act(split="train")
+            act_ids_val = moma.get_ids_act(split="val")
+            act_ids.extend(act_ids_val)
         else:
-            ids = moma.get_cids("act", "test")
+            act_ids = moma.get_ids_act(split="test")
 
-        # get dataset
-        dataset = []  # dataset: list of tuples[(video path, label)]
-        for id in ids:
-            videos_paths = moma.get_paths(id)
-            for video_path in videos_paths:
-                dataset.append((video_path, id))
+        # get video paths for all activities
+        paths = moma.get_paths(ids_act=act_ids)
+        # get annotation of activities
+        anns_acts = moma.get_anns_act(act_ids)
+        # get corresponding class IDs for each activity in train/test set
+        cids = [ann_act.cid for ann_act in anns_acts]
+
+        # get dataset: list of tuples[(video path, label)]
+        dataset = [(path, cid) for path, cid in zip(paths, cids)]
         self.dataset = dataset
 
     def __len__(self):
@@ -58,7 +64,7 @@ class MOMADataset(Dataset):
         )
         image = image[0]
         # turn the image type to PIL (for transform purpose)
-        image = im.fromarray(image)
+        image = Image.fromarray(image)
         # transform image:  resize, to Tensor, normalize
         if self.transform:
             image = self.transform(image)

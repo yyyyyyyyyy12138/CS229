@@ -6,7 +6,6 @@ from torch.optim.lr_scheduler import StepLR
 
 
 class Model:
-    # def __init__(self, lr, momentum, num_classes):
     def __init__(self, args, num_classes):
         self.device = torch.device("cuda:0")
         # models/nets/.py/get_***net
@@ -15,6 +14,6 @@ class Model:
         self.net.to(self.device)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(self.net.parameters(), args.lr, args.momentum)
-        self.scheduler = StepLR(self.optimizer, step_size=7, gamma=0.1)
+        self.scheduler = StepLR(self.optimizer, step_size=7, gamma=0.1)  # TODO: argparse
 
 

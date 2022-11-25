@@ -3,8 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 import glob
 import ffmpeg
 import numpy as np
-from PIL import Image as im
-from pprint import pprint
+from PIL import Image
 
 
 def split(root_dir: str, split_id: str) -> list:
@@ -93,7 +92,7 @@ class HMDB51Dataset(Dataset):
         )
         image = image[0]
         # turn the image type to PIL (for transform purpose)
-        image = im.fromarray(image)
+        image = Image.fromarray(image)
         # transform image:  resize, to Tensor, normalize
         if self.transform:
             image = self.transform(image)
