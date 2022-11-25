@@ -15,6 +15,9 @@ parser.add_argument('--net', default="resnet18", type=str, help="architecture")
 parser.add_argument('--log-freq', default=10, type=int, help="log and print frequency")
 parser.add_argument('--log-cnt', default=10, type=int, help="total number of logged images per epoch")
 parser.add_argument('--batch-size', default=64, type=int, help="number of images per batch")
+parser.add_argument('--ckpt-freq', default=1, type=int, help="checkpoint saving frequency")
+parser.add_argument('--ckpt-path', default="/home/ssd/data/model.pt", type=str, help="checkpoint saving path")
+parser.add_argument('--ckpt-load', action="store_true", help="checkpoint loading flag")
 args = parser.parse_args()
 
 
