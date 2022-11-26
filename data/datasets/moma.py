@@ -1,9 +1,11 @@
-import momaapi
-from torch.utils.data import Dataset, DataLoader
-import ffmpeg
 import os
+import ffmpeg
 import numpy as np
+import random
+from torch.utils.data import Dataset, DataLoader
 from PIL import Image
+
+import momaapi
 
 
 class MOMADataset(Dataset):
@@ -13,9 +15,10 @@ class MOMADataset(Dataset):
         self.path = path
         self.num_classes = moma.num_classes["act"]
         self.transform = transform
+        self.train = train
 
         # get activity instance IDs (train+val or test)
-        if train:
+        if self.train:
             act_ids = moma.get_ids_act(split="train")
             act_ids_val = moma.get_ids_act(split="val")
             act_ids.extend(act_ids_val)
@@ -42,12 +45,15 @@ class MOMADataset(Dataset):
 
         probe = ffmpeg.probe(path)
         video_streams = probe["streams"][0]
+
         # get total number of frames in the video
         num_frames = int(video_streams["nb_frames"])
         width = int(video_streams['width'])
         height = int(video_streams['height'])
-        # get the mid frame index
-        target_frame = num_frames // 2
+
+        # if train, get a random frame, if test, get the mid frame index
+        target_frame = random.randint(0, num_frames-1) if self.train else num_frames // 2
+
         # get the mid frame image
         out, _ = (
             ffmpeg

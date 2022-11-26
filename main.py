@@ -6,10 +6,10 @@ from trainer import Trainer
 
 parser = argparse.ArgumentParser(description='Baseline Training')
 parser.add_argument('--lr', default=0.001, type=float, help='initial learning rate')
-parser.add_argument('--lr-step-size', default=7, type=int, help='learning rate decay step size')
+parser.add_argument('--lr-step-size', default=20, type=int, help='learning rate decay step size')
 parser.add_argument('--lr-gamma', default=0.1, type=float, help='multiplicative factor of learning rate decay')
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-parser.add_argument('--epochs', default=21, type=int, help='number of total epochs to run')
+parser.add_argument('--epochs', default=30, type=int, help='number of total epochs to run')
 parser.add_argument('--root', default="/home/ssd/data", type=str, help='root directory')
 parser.add_argument('--pretrain', action="store_true", help='pretrain or not')
 parser.add_argument("--debug", action="store_true", help="debug mode or not")
