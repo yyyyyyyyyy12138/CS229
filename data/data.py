@@ -4,10 +4,6 @@ from .datasets import HMDB51Dataset, MOMADataset
 from torchvision.models import ResNet18_Weights
 
 
-# if debug mode
-def len_debug(self):
-    return 5
-
 # define transformation, get train/test set using dataset class in data/datasets (e.g., HMDB51Dataset)
 # call torch dataloader with arguments (train/test set, batch size, ....)
 class Data:
@@ -34,13 +30,6 @@ class Data:
                 transforms.ToTensor(),
                 transforms.Normalize((0.5,), (0.5,))
             ])
-
-        # if in debug mode, reduces the length of dataset to len_debug
-        if args.debug:
-            if args.dataset == "hmdb51":
-                HMDB51Dataset.__len__ = len_debug
-            else:
-                MOMADataset.__len__ = len_debug
 
         # get training/test set
         if args.dataset == "hmdb51":
