@@ -18,7 +18,7 @@ class Model(pl.LightningModule):
         self.args = args
 
     def configure_optimizers(self):
-        optimizer = optim.SGD(self.net.parameters(), self.args.lr, self.args.momentum)
+        optimizer = optim.Adam(self.net.parameters(), self.args.lr)
         scheduler = StepLR(optimizer, step_size=self.args.lr_step_size, gamma=self.args.lr_gamma)
         return [optimizer], [scheduler]
 
@@ -40,6 +40,24 @@ class Model(pl.LightningModule):
         self.log_dict(metrics)
 
         return loss
+
+    def validation_step(self, batch, batch_idx):
+        # pass data
+        inputs, labels = batch
+
+        # performs an inference
+        logits = self.net(inputs)
+
+        #get predicted class
+        preds = torch.argmax(logits, dim=1)
+        acc = self.acc_metric(preds, labels)
+        f1 = self.f1_metric(preds, labels)
+
+        # logging loss, accuracy, and f1 score
+        metrics = {"acc": acc, "f1": f1}
+        self.log_dict(metrics)
+
+        return metrics
 
     def test_step(self, batch, batch_idx):
         # pass data

@@ -31,15 +31,18 @@ class Data:
                 transforms.Normalize((0.5,), (0.5,))
             ])
 
-        # get training/test set
+        # get training/val/test set
         if args.dataset == "hmdb51":
             training_set = HMDB51Dataset(args.root, "1", train=True, transform=train_transform)
+            val_set = HMDB51Dataset(args.root, "2", train=False, transform=test_transform)
             test_set = HMDB51Dataset(args.root, "2", train=False, transform=test_transform)
         else:
             training_set = MOMADataset(args.root, train=True, transform=train_transform)
+            val_set = MOMADataset(args.root, train=False, transform=test_transform)
             test_set = MOMADataset(args.root, train=False, transform=test_transform)
 
-        # get training/test loader
+        # get training/val/test loader
         self.training_loader = torch.utils.data.DataLoader(training_set, batch_size=args.batch_size, shuffle=not args.debug, num_workers=4)
+        self.val_loader = torch.utils.data.DataLoader(val_set, batch_size = args.batch_size, shuffle=False, num_workers=4)
         self.test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=False, num_workers=4)
         self.num_classes = training_set.num_classes
