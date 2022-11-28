@@ -26,7 +26,7 @@ class Model(pl.LightningModule):
         # pass data
         inputs, labels = batch
 
-        # performs an inference
+        # performs an inference 
         logits = self.net(inputs)
 
         #get predicted class
@@ -36,7 +36,7 @@ class Model(pl.LightningModule):
         f1 = self.f1_metric(preds, labels)
 
         # logging loss, accuracy, and f1 score
-        metrics = {"loss": loss, "acc": acc, "f1": f1}
+        metrics = {"train/loss": loss, "train/acc": acc, "train/f1": f1}
         self.log_dict(metrics)
 
         return loss
@@ -54,7 +54,7 @@ class Model(pl.LightningModule):
         f1 = self.f1_metric(preds, labels)
 
         # logging loss, accuracy, and f1 score
-        metrics = {"acc": acc, "f1": f1}
+        metrics = {"val/acc": acc, "val/f1": f1}
         self.log_dict(metrics)
 
         return metrics
@@ -72,7 +72,7 @@ class Model(pl.LightningModule):
         f1 = self.f1_metric(preds, labels)
 
         # logging loss, accuracy, and f1 score
-        metrics = {"acc": acc, "f1": f1}
+        metrics = {"test/acc": acc, "test/f1": f1}
         self.log_dict(metrics)
 
         return metrics
