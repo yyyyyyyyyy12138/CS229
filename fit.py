@@ -19,7 +19,7 @@ parser.add_argument('--log-freq', default=10, type=int, help="log frequency/log 
 parser.add_argument('--batch-size', default=16, type=int, help="number of images per batch")
 parser.add_argument('--ckpt-freq', default=2, type=int, help="checkpoint every x epochs")
 parser.add_argument('--ckpt-load', action="store_true", help="checkpoint loading flag")
-parser.add_argument("--gpus", type=int, default=1, help="enables GPU acceleration")
+parser.add_argument("--gpus", type=int, default=4, help="enables GPU acceleration")
 parser.add_argument("--val-freq", type=int, default=1, help="Perform a validation loop every after every x training "
                                                             "epochs.")
 parser.add_argument("--num-workers", type=int, default=4, help="number of processes")
@@ -34,7 +34,8 @@ def main():
     trainer = get_trainer(args)
     trainer.fit(model,
                 ckpt_path="last" if args.ckpt_load else None,
-                datamodule=data)
+                datamodule=data,
+                )
 
 
 if __name__ == '__main__':

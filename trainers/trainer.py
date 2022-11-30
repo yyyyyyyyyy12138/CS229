@@ -11,7 +11,8 @@ def get_trainer(args):
     checkpoint_callback = ModelCheckpoint(every_n_epochs=args.ckpt_freq, dirpath=os.path.join(args.root, "ckpt"))
     trainer = pl.Trainer(max_epochs=args.epochs,
                          accelerator='gpu',
-                         devices=args.gpus,
+                         strategy='ddp' if args.gpus not in [0, 1] else None,
+                         gpus=args.gpus,
                          logger=wandb_logger,
                          check_val_every_n_epoch=args.val_freq,
                          log_every_n_steps=args.log_freq if not args.debug else 1,
