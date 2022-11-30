@@ -1,7 +1,7 @@
 import argparse
-from data import Data
 from models import Model
 from trainers import get_trainer
+from data import get_data
 
 parser = argparse.ArgumentParser(description='Baseline Training')
 parser.add_argument('--lr', default=0.001, type=float, help='initial learning rate')
@@ -22,20 +22,19 @@ parser.add_argument('--ckpt-load', action="store_true", help="checkpoint loading
 parser.add_argument("--gpus", type=int, default=1, help="enables GPU acceleration")
 parser.add_argument("--val-freq", type=int, default=1, help="Perform a validation loop every after every x training "
                                                             "epochs.")
+parser.add_argument("--num-workers", type=int, default=4, help="number of processes")
 # TODO: add argument of optimizer
 
 args = parser.parse_args()
 
 
 def main():
-    # data/data.py: class Data (attributes: training_loader, test_loader, num_classes)
-    data = Data(args)
+    data = get_data(args)
     model = Model(args, data.num_classes)
     trainer = get_trainer(args)
     trainer.fit(model,
-                train_dataloaders=data.training_loader,
-                val_dataloaders=data.val_loader,
-                ckpt_path="last" if args.ckpt_load else None)
+                ckpt_path="last" if args.ckpt_load else None,
+                datamodule=data)
 
 
 if __name__ == '__main__':

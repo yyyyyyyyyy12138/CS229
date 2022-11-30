@@ -26,7 +26,7 @@ class Model(pl.LightningModule):
         # pass data
         inputs, labels = batch
 
-        # performs an inference 
+        # performs an inference
         logits = self.net(inputs)
 
         #get predicted class

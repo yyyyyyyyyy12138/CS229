@@ -17,8 +17,10 @@ def split(root_dir: str, split_id: str) -> list:
 
 
 class HMDB51Dataset(Dataset):
+    # static variable
+    num_classes = 51
+
     def __init__(self, root_dir: str, split_id: str, train: bool, transform=None):
-        # self.mid_frame = ;
         self.root_dir = root_dir
         self.transform = transform
         self.train = train
@@ -34,7 +36,7 @@ class HMDB51Dataset(Dataset):
         # get train/test dataset, list of tuples
         files = split(self.root_dir, split_id)
         self.dataset = self.get_videos(files, train, classes)
-        self.num_classes = len(classes)
+        # self.num_classes = len(classes)
         # pprint(dataset)
 
     def get_videos(self, files: list, train: bool, classes: dict) -> list:

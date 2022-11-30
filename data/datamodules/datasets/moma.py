@@ -9,11 +9,14 @@ import momaapi
 
 
 class MOMADataset(Dataset):
+    # static variable
+    num_classes = 20
+
     def __init__(self, root_dir: str, train: bool, transform=None):
         path = os.path.join(root_dir, "moma-lrg")
         moma = momaapi.MOMA(path)
         self.path = path
-        self.num_classes = moma.num_classes["act"]
+        # self.num_classes = moma.num_classes["act"]
         self.transform = transform
         self.train = train
 
