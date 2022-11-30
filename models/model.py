@@ -8,18 +8,21 @@ import torchmetrics
 
 
 class Model(pl.LightningModule):
-    def __init__(self, args, num_classes):
+    def __init__(self, cfg, num_classes):
         super().__init__()
         net_dict = {"resnet18": get_resnet, "lenet": get_lenet}
-        self.net = net_dict[args.net](num_classes, args.pretrain)
+        self.net = net_dict[cfg.net](num_classes, cfg.pretrain)
         self.criterion = nn.CrossEntropyLoss()
         self.acc_metric = torchmetrics.Accuracy()
         self.f1_metric = torchmetrics.F1Score(num_classes)
-        self.args = args
+        self.cfg = cfg
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.net.parameters(), self.args.lr)
-        scheduler = StepLR(optimizer, step_size=self.args.lr_step_size, gamma=self.args.lr_gamma)
+        if self.cfg.optimizer == "SGD":
+            optimizer = optim.SGD(self.net.parameters(), self.cfg.lr["SGD"], self.cfg.momentum)
+        if self.cfg.optimizer == "Adam":
+            optimizer = optim.Adam(self.net.parameters(), self.cfg.lr["Adam"])
+        scheduler = StepLR(optimizer, step_size=self.cfg.lr_step_size, gamma=self.cfg.lr_gamma)
         return [optimizer], [scheduler]
 
     def training_step(self, batch, batch_idx):
