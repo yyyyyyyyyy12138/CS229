@@ -1,9 +1,10 @@
 root: /home/ssd/data
-gpus: 4
+gpus: 1
 num_workers: 4
 
-net: lenet
-dataset: hmdb51
+net: slowfast
+dataset: moma
+video_based: True
 
 lr:
   SGD: 0.001
@@ -15,7 +16,8 @@ momentum: 0.9
 
 batch_size: 16
 epochs: 50
-pretrain: False
+pretrain: True
+frozen: False
 debug: True
 debug_size: 4
 
@@ -23,3 +25,10 @@ log_freq: 10
 ckpt_freq: 2
 ckpt_load: False
 val_freq: 1
+
+T: 8
+tau: 8
+fps: 30
+num_clips: 10
+num_crops: 3
+alpha: 4

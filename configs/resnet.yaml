@@ -4,6 +4,7 @@ num_workers: 4
 
 net: resnet18
 dataset: moma
+video_based: False
 
 lr:
   SGD: 0.001
@@ -15,11 +16,12 @@ momentum: 0.9
 
 batch_size: 16
 epochs: 50
-pretrain: bool=true
-debug: bool=true
+pretrain: True
+frozen: False
+debug: True
 debug_size: 4
 
 log_freq: 10
 ckpt_freq: 2
-ckpt_load: bool=false
+ckpt_load: False
 val_freq: 1

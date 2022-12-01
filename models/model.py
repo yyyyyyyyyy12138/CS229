@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from .nets import get_lenet, get_resnet
+from .nets import get_lenet, get_resnet, get_slowfast
 from torch.optim.lr_scheduler import StepLR
 import pytorch_lightning as pl
 import torchmetrics
@@ -10,8 +10,8 @@ import torchmetrics
 class Model(pl.LightningModule):
     def __init__(self, cfg, num_classes):
         super().__init__()
-        net_dict = {"resnet18": get_resnet, "lenet": get_lenet}
-        self.net = net_dict[cfg.net](num_classes, cfg.pretrain)
+        net_dict = {"resnet18": get_resnet, "lenet": get_lenet, "slowfast": get_slowfast}
+        self.net = net_dict[cfg.net](num_classes, cfg)
         self.criterion = nn.CrossEntropyLoss()
         self.acc_metric = torchmetrics.Accuracy()
         self.f1_metric = torchmetrics.F1Score(num_classes)
@@ -27,6 +27,7 @@ class Model(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         # pass data
+        # TODO: batch data type is changed: need to fix 
         inputs, labels = batch
 
         # performs an inference

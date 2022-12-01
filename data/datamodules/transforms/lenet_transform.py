@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms as transforms
 
 
-def get_lenet_transforms():
+def get_lenet_transforms(cfg):
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(64),
         transforms.ToTensor(),

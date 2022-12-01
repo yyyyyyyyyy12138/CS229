@@ -29,7 +29,7 @@ from omegaconf import OmegaConf
 
 
 def main():
-    cfg = OmegaConf.load("configs/resnet.yaml")
+    cfg = OmegaConf.load("configs/slowfast.yaml")
     data = get_data(cfg)
     model = Model(cfg, data.num_classes)
     trainer = get_trainer(cfg)

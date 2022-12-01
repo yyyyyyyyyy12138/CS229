@@ -1,7 +1,7 @@
 import torch
 import pytorch_lightning as pl
 from .transforms import get_transform
-from .datasets import MOMADataset
+from .datasets import MOMAFrameDataset, MOMAVideoDataset
 
 
 class MOMADataModule(pl.LightningDataModule):
@@ -9,13 +9,21 @@ class MOMADataModule(pl.LightningDataModule):
         super().__init__()
         self.train_transform, self.val_transform, self.test_transform = get_transform(cfg)
         self.cfg = cfg
-        self.num_classes = MOMADataset.num_classes
+        self.num_classes = MOMAFrameDataset.num_classes
 
     def setup(self, stage=None):
-        self.moma_train = MOMADataset(self.cfg.root, train=True, transform=self.train_transform)
-        self.moma_val = MOMADataset(self.cfg.root, train=False, transform=self.val_transform)
-        self.moma_test = MOMADataset(self.cfg.root, train=False, transform=self.test_transform)
-
+        # TODO: save to dict later?
+        if self.cfg.video_based:
+            self.moma_train = MOMAVideoDataset(self.cfg, split="train", transform=self.train_transform)
+            self.moma_val = MOMAVideoDataset(self.cfg, split="val", transform=self.val_transform)
+            self.moma_test = MOMAVideoDataset(self.cfg, split="test", transform=self.test_transform)
+        else:
+            self.moma_train = MOMAFrameDataset(self.cfg.root, train=True,
+                                               transform=self.train_transform)
+            self.moma_val = MOMAFrameDataset(self.cfg.root, train=False,
+                                          transform=self.val_transform)
+            self.moma_test = MOMAFrameDataset(self.cfg.root, train=False,
+                                          transform=self.test_transform)
     def train_dataloader(self):
         return torch.utils.data.DataLoader(self.moma_train, batch_size=self.cfg.batch_size, shuffle=not self.cfg.debug, num_workers=self.cfg.num_workers)
 

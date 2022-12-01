@@ -23,8 +23,8 @@ class LeNet(nn.Module):
         return x
 
 
-def get_lenet(num_classes, pretrain):
-    assert pretrain is False
+def get_lenet(num_classes, cfg):
+    assert cfg.pretrain is False
     return LeNet(num_classes)
 
 
