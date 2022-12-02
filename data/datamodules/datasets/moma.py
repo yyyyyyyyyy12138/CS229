@@ -41,7 +41,6 @@ class MOMAVideoDataset(LabeledVideoDataset):
         if split == "train":
             clip_sampler = make_clip_sampler("random", cfg.T*cfg.tau/cfg.fps)
         elif split == "val":
-            print("!-------[no error] in data/datamodules/datasets")
             clip_sampler = make_clip_sampler("uniform", cfg.T*cfg.tau/cfg.fps)
         else:
             clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T*cfg.tau/cfg.fps, cfg.num_clips, cfg.num_crops)

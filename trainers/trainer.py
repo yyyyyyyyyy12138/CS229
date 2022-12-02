@@ -7,13 +7,15 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 
 def get_trainer(cfg):
     wandb_logger = WandbLogger(save_dir=cfg.root)
+    wandb_logger.log_hyperparams(cfg)
+
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
     checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq, dirpath=os.path.join(cfg.root, "ckpt"))
 
     trainer = pl.Trainer(max_epochs=cfg.epochs,
                          accelerator='gpu',
                          strategy='ddp' if cfg.gpus not in [0, 1] else None,
-                         gpus=cfg.gpus,
+                         devices=cfg.gpus,
                          logger=wandb_logger,
                          check_val_every_n_epoch=cfg.val_freq,
                          log_every_n_steps=cfg.log_freq if not cfg.debug else 1,

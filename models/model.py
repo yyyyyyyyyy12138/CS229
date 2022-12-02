@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 import torch.optim as optim
 from .nets import get_lenet, get_resnet, get_slowfast
@@ -25,7 +24,7 @@ class Model(pl.LightningModule):
         """
         epoch = self.trainer.current_epoch
         if self.cfg.gpus not in [0, 1]:
-            self.trainer.datamodule.train_dataset.dataset.video_sampler.set_epoch(epoch)
+            self.trainer.datamodule.train_dataset.video_sampler.set_epoch(epoch)
 
     def configure_optimizers(self):
         if self.cfg.optimizer == "SGD":
@@ -70,7 +69,6 @@ class Model(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        print("!-------[no error] in models/model")
         if self.cfg.net == "slowfast":
             inputs, labels = batch['video'], batch['cid']
             batch_size = len(inputs[0])

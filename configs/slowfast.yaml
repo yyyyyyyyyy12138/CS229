@@ -1,5 +1,5 @@
 root: /home/ssd/data
-gpus: 1
+gpus: 4
 num_workers: 8
 
 net: slowfast
@@ -7,7 +7,7 @@ dataset: moma
 video_based: True
 
 lr:
-  SGD: 0.01
+  SGD: 0.05
   Adam: 0.001
 lr_step_size: 30
 lr_policy: 'cosine'
@@ -20,10 +20,10 @@ momentum: 0.9
 
 
 batch_size: 8
-epochs: 5
+epochs: 30
 pretrain: True
 frozen: False
-debug: True
+debug: False
 debug_size: 4
 
 log_freq: 10
