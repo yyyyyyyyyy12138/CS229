@@ -34,8 +34,8 @@ def main():
     model = Model(cfg, data.num_classes)
     trainer = get_trainer(cfg)
     trainer.fit(model,
-                ckpt_path="last" if cfg.ckpt_load else None,
                 datamodule=data,
+                ckpt_path="last" if cfg.ckpt_load else None
                 )
 
 

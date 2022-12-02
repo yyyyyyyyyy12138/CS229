@@ -8,20 +8,24 @@ import momaapi
 from pytorchvideo.data import LabeledVideoDataset, make_clip_sampler
 from torch.utils.data import DistributedSampler, RandomSampler
 
+# TODO: MOMAGraphDataset():
+
+
 
 class MOMAVideoDataset(LabeledVideoDataset):
+    # static variable
+    num_classes = 20
+
     def __init__(self, cfg, split: str, transform=None):
-        # TODO: pass in video-based transform, currently defined as image-based transform
         path = os.path.join(cfg.root, "moma-lrg")
         moma = momaapi.MOMA(path)
-        # self.num_classes = moma.num_classes["act"]
 
         # get activity instance IDs (train+val or test)
         if split == "train":
             act_ids = moma.get_ids_act(split="train")
             act_ids_val = moma.get_ids_act(split="val")
             act_ids.extend(act_ids_val)
-        else:
+        else:  # split is val or test
             act_ids = moma.get_ids_act(split="test")
 
         # get video paths for all activities
@@ -31,15 +35,14 @@ class MOMAVideoDataset(LabeledVideoDataset):
         # get corresponding class IDs for each activity in train/test set
         cids = [ann_act.cid for ann_act in anns_acts]
 
-        # get dataset: list of tuples[(video path, label)]
+        # get dataset: list of tuples[(video path, dict{"cid": labels})]
         dataset = [(path, {"cid": cid}) for path, cid in zip(paths, cids)]
 
         if split == "train":
             clip_sampler = make_clip_sampler("random", cfg.T*cfg.tau/cfg.fps)
-
         elif split == "val":
+            print("!-------[no error] in data/datamodules/datasets")
             clip_sampler = make_clip_sampler("uniform", cfg.T*cfg.tau/cfg.fps)
-
         else:
             clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T*cfg.tau/cfg.fps, cfg.num_clips, cfg.num_crops)
 
