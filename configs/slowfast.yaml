@@ -1,6 +1,6 @@
 root: /home/ssd/data
 gpus: 4
-num_workers: 8
+num_workers: 4
 
 net: slowfast
 dataset: moma
