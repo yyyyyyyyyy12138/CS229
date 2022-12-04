@@ -1,2 +1,2 @@
 from .hmdb51 import HMDB51Dataset
-from .moma import MOMAFrameDataset, MOMAVideoDataset
+from .moma import MOMAFrameDataset, MOMAVideoDataset, MOMAGraphDataset

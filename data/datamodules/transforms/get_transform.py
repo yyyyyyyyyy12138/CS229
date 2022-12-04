@@ -12,3 +12,6 @@ def get_transform(cfg):
 
     if cfg.net == "slowfast":
         return get_slowfast_transform(cfg)
+
+    else:
+        raise NotImplementedError

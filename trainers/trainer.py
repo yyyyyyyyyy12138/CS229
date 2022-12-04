@@ -21,7 +21,7 @@ def get_trainer(cfg):
                          log_every_n_steps=cfg.log_freq if not cfg.debug else 1,
                          callbacks=[lr_monitor, checkpoint_callback],
                          overfit_batches=cfg.debug_size if cfg.debug else 0.0,
-                         replace_sampler_ddp=not cfg.video_based,
+                         replace_sampler_ddp=not cfg.model_base == "video",
                          limit_train_batches=1  # TODO
                          )
     return trainer

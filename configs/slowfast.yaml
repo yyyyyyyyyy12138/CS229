@@ -1,10 +1,10 @@
 root: /home/ssd/data
-gpus: 4
+gpus: 1
 num_workers: 4
 
 net: slowfast
 dataset: moma
-video_based: True
+model_base: "video"
 
 lr:
   SGD: 0.05

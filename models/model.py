@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.optim as optim
-from .nets import get_lenet, get_resnet, get_slowfast
+from .nets import get_lenet, get_resnet, get_slowfast, get_graphnet
 from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR
 import pytorch_lightning as pl
 import torchmetrics
@@ -9,7 +9,7 @@ import torchmetrics
 class Model(pl.LightningModule):
     def __init__(self, cfg, num_classes):
         super().__init__()
-        net_dict = {"resnet18": get_resnet, "lenet": get_lenet, "slowfast": get_slowfast}
+        net_dict = {"resnet18": get_resnet, "lenet": get_lenet, "slowfast": get_slowfast, "graphnet": get_graphnet}
         self.net = net_dict[cfg.net](num_classes, cfg)
         self.criterion = nn.CrossEntropyLoss()
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)

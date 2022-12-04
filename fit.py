@@ -5,7 +5,7 @@ from omegaconf import OmegaConf
 
 
 def main():
-    cfg = OmegaConf.load("configs/slowfast.yaml")
+    cfg = OmegaConf.load("configs/graphnet.yaml")
     data = get_data(cfg)
 
     model = Model(cfg, data.num_classes)

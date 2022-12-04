@@ -4,6 +4,7 @@ num_workers: 4
 
 net: lenet
 dataset: hmdb51
+model_base: "image"
 
 lr:
   SGD: 0.001
