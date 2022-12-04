@@ -7,8 +7,7 @@ from .datasets import MOMAFrameDataset, MOMAVideoDataset, MOMAGraphDataset
 class MOMADataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
-        if cfg.model_base != "graph":
-            self.train_transform, self.val_transform, self.test_transform = get_transform(cfg)
+        self.train_transform, self.val_transform, self.test_transform = get_transform(cfg)
         self.cfg = cfg
         self.num_classes = MOMAFrameDataset.num_classes
         self.train_dataset, self.val_dataset, self.test_dataset = None, None, None
@@ -31,8 +30,8 @@ class MOMADataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.cfg.batch_size,
-                          shuffle=None if self.cfg.video_based else not self.cfg.debug,
-                          num_workers=self.cfg.num_workers, pin_memory=True) #TODO: drop_last?
+                          shuffle=not self.cfg.debug,
+                          num_workers=self.cfg.num_workers, pin_memory=True)
 
     def val_dataloader(self):
         return DataLoader(self.val_dataset, batch_size=self.cfg.batch_size,

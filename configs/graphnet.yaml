@@ -1,6 +1,6 @@
 root: /home/ssd/data
-gpus: 1
-num_workers: 0
+gpus: [0]
+num_workers: 2
 
 net: graphnet
 dataset: moma
@@ -18,9 +18,9 @@ momentum: 0.9
 # TODO: add warmup
 
 
-batch_size: 8
-epochs: 30
-pretrain: True
+batch_size: 16
+epochs: 20
+pretrain: False
 frozen: False
 debug: False
 debug_size: 4

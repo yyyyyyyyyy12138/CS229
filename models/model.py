@@ -23,7 +23,7 @@ class Model(pl.LightningModule):
         that shuffling is done correctly
         """
         epoch = self.trainer.current_epoch
-        if self.cfg.gpus not in [0, 1]:
+        if len(self.cfg.gpus) > 1:
             self.trainer.datamodule.train_dataset.video_sampler.set_epoch(epoch)
 
     def configure_optimizers(self):

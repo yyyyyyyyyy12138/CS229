@@ -6,7 +6,7 @@ import torch
 def get_slowfast(num_classes, cfg):
     # create slowfast network with moma num_of_classes of [act]
     net = create_slowfast(
-        input_chhoiels=(3, 3),
+        input_channels=(3, 3),
         model_depth=50,
         model_num_class=num_classes,
         dropout_rate=0.5,

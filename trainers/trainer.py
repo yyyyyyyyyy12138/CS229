@@ -14,14 +14,13 @@ def get_trainer(cfg):
 
     trainer = pl.Trainer(max_epochs=cfg.epochs,
                          accelerator='gpu',
-                         strategy='ddp' if cfg.gpus not in [0, 1] else None,
+                         strategy='ddp' if len(cfg.gpus) > 1 else None,
                          devices=cfg.gpus,
                          logger=wandb_logger,
                          check_val_every_n_epoch=cfg.val_freq,
                          log_every_n_steps=cfg.log_freq if not cfg.debug else 1,
                          callbacks=[lr_monitor, checkpoint_callback],
                          overfit_batches=cfg.debug_size if cfg.debug else 0.0,
-                         replace_sampler_ddp=not cfg.model_base == "video",
-                         limit_train_batches=1  # TODO
+                         replace_sampler_ddp=not cfg.model_base == "video"
                          )
     return trainer

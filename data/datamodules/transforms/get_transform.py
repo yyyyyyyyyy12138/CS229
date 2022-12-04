@@ -7,11 +7,14 @@ def get_transform(cfg):
     if cfg.net == "resnet18":
         return get_resnet_transforms(cfg)
 
-    if cfg.net == "lenet":
+    elif cfg.net == "lenet":
         return get_lenet_transforms(cfg)
 
-    if cfg.net == "slowfast":
+    elif cfg.net == "slowfast":
         return get_slowfast_transform(cfg)
+
+    elif cfg.net == "graphnet":
+        return None, None, None
 
     else:
         raise NotImplementedError
