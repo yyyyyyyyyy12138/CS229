@@ -1,5 +1,5 @@
 root: /home/ssd/data
-gpus: 1
+gpus: [0,1,2,3]
 num_workers: 4
 
 net: slowfast
@@ -17,7 +17,6 @@ wd: 1e-4
 optimizer: SGD
 momentum: 0.9
 # TODO: add warmup
-
 
 batch_size: 8
 epochs: 30

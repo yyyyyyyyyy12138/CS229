@@ -30,7 +30,7 @@ class MOMADataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.cfg.batch_size,
-                          shuffle=not self.cfg.debug,
+                          shuffle=not self.cfg.debug and self.cfg.model_base != "video",
                           num_workers=self.cfg.num_workers, pin_memory=True)
 
     def val_dataloader(self):
