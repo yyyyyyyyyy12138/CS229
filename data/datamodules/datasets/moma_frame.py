@@ -53,8 +53,13 @@ class MOMAFrameDataset(Dataset):
         width = int(video_streams['width'])
         height = int(video_streams['height'])
 
+        # Baseline 1:
         # if train, get a random frame, if test, get the mid frame index
-        target_frame = random.randint(0, num_frames - 1) if self.train else num_frames // 2
+        # target_frame = random.randint(0, num_frames - 1) if self.train else num_frames // 2
+
+        # Baseline 2:
+        # get the mid frame index
+        target_frame = num_frames // 2
 
         # get the mid frame image
         out, _ = (

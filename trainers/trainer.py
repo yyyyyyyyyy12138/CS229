@@ -19,9 +19,9 @@ def get_trainer(cfg):
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
                                               dirpath=os.path.join(cfg.root, "ckpt/graphnet"),
                                               save_last=True)
-    elif cfg.net == "resnet":
+    elif cfg.net == "resnet18":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
-                                              dirpath=os.path.join(cfg.root, "ckpt/resnet"),
+                                              dirpath=os.path.join(cfg.root, "ckpt/resnet2"),
                                               save_last=True)
     else:
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,

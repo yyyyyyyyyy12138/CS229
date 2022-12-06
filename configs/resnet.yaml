@@ -1,5 +1,5 @@
 root: /home/ssd/data
-gpus: [0]
+gpus: [0,1,2,3]
 num_workers: 4
 
 net: resnet18
