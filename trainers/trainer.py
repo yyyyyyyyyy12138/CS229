@@ -10,7 +10,13 @@ def get_trainer(cfg):
     wandb_logger.log_hyperparams(cfg)
 
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
-    checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq, dirpath=os.path.join(cfg.root, "ckpt"))
+    if cfg.net == "slowfast":
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq, dirpath=os.path.join(cfg.root, "ckpt/slowfast"))
+    elif cfg.net == "graphnet":
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq, dirpath=os.path.join(cfg.root, "ckpt/graphnet"))
+    else:
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
+                                              dirpath=os.path.join(cfg.root, "ckpt"))
 
     trainer = pl.Trainer(max_epochs=cfg.epochs,
                          accelerator='gpu',

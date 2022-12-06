@@ -1,0 +1,13 @@
+root: /home/ssd/data
+gpus: [0]
+num_workers: 4
+
+net: 'twostream'
+epochs: 30
+debug: False
+debug_size: 4
+model_base: "graph"
+log_freq: 10
+ckpt_freq: 2
+ckpt_load: False
+val_freq: 1

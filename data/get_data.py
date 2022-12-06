@@ -1,4 +1,8 @@
-from .datamodules import HMDB51DataModule, MOMADataModule
+from .datamodules import HMDB51DataModule, MOMADataModule, TwoStreamMOMADataModule
+
+
+def get_data_twostream(video_cfg, graph_cfg):
+    return TwoStreamMOMADataModule(video_cfg, graph_cfg)
 
 
 def get_data(cfg):

@@ -1,25 +1,20 @@
-from models import Model
+from models import TwoStreamModel
 from trainers import get_trainer
-from data import get_data
+from data import get_data_twostream
 from omegaconf import OmegaConf
 import os
 
+
 def main():
-    cfg = OmegaConf.load("configs/slowfast.yaml")
-    data = get_data(cfg)
-
-    checkpoint_path = os.path.join(cfg.root, 'ckpt', 'epoch=29-step=1080.ckpt')
-    model = Model.load_from_checkpoint(
-        checkpoint_path=os.path.join(cfg.root, 'ckpt', 'epoch=29-step=1080.ckpt')
-    )
-
-    # TODO: question: model instance here? https://github.com/Lightning-AI/lightning/issues/924
-    # model = Model(cfg, data.num_classes)
-    # trainer = get_trainer(cfg)
-    # trainer.test(model=model,
-    #              datamodule=data,
-    #              ckpt_path=checkpoint_path
-    #              )
+    video_cfg = OmegaConf.load("configs/slowfast.yaml")
+    graph_cfg = OmegaConf.load("configs/graphnet.yaml")
+    twostream_cfg = OmegaConf.load("configs/twostream.yaml")
+    data = get_data_twostream(video_cfg, graph_cfg)
+    model = TwoStreamModel(video_cfg, graph_cfg, data.num_classes)
+    trainer = get_trainer(twostream_cfg)
+    trainer.test(model=model,
+                 datamodule=data,
+                 )
 
 
 if __name__ == '__main__':
