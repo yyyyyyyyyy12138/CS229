@@ -1,9 +1,11 @@
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from .nets import get_lenet, get_resnet, get_slowfast, get_graphnet
 from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR
 import pytorch_lightning as pl
 import torchmetrics
+import os
 
 
 class Model(pl.LightningModule):
@@ -14,7 +16,7 @@ class Model(pl.LightningModule):
         self.criterion = nn.CrossEntropyLoss()
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)
         self.acc_metric_top5 = torchmetrics.Accuracy(average='micro', top_k=5)
-        self.f1_metric = torchmetrics.F1Score(num_classes)
+        self.f1_metric = torchmetrics.F1Score(num_classes=num_classes, average='micro')
         self.cfg = cfg
 
     def on_train_epoch_start(self):
@@ -54,18 +56,39 @@ class Model(pl.LightningModule):
 
         # performs an inference
         logits = self.net(inputs)
+        if self.cfg.net == "slowfast":
+            sf_logits_path = os.path.join(self.cfg.root_dir, "logits/sf_logits.pt")
+            gn_logits_path = os.path.join(self.cfg.root_dir, "logits/gn_logits.pt")
+            torch.save(logits, sf_logits_path)
+            gn_logits = torch.load(gn_logits_path)
+            two_stream_logits = torch.mean(torch.stack((logits, gn_logits)), dim=0)
 
-        #get predicted class
+        elif self.cfg.net == "graphnet":
+            gn_logits_path = os.path.join(self.cfg.root_dir, "logits/gn_logits.pt")
+            torch.save(logits, gn_logits_path)
+
+        # get predicted class in one-stream
         preds = logits
         loss = self.criterion(logits, labels)
         acc1 = self.acc_metric_top1(preds, labels)
         acc5 = self.acc_metric_top5(preds, labels)
         f1 = self.f1_metric(preds, labels)
 
+        if self.cfg.net == "slowfast":
+            # get predicted class in two-streams
+            preds_2 = two_stream_logits
+            loss_2 = self.criterion(logits, labels)
+            acc1_2 = self.acc_metric_top1(preds, labels)
+            acc5_2 = self.acc_metric_top5(preds, labels)
+            f1_2 = self.f1_metric(preds, labels)
+            metrics_2 = {"train/loss_2": loss_2, "train/acc1_2": acc1_2, "train/acc5_2": acc5_2, "train/f1_2": f1_2}
+            self.log_dict(metrics_2, batch_size=batch_size)
+
         # logging loss, accuracy, and f1 score
         metrics = {"train/loss": loss, "train/acc1": acc1, "train/acc5": acc5, "train/f1": f1}
         self.log_dict(metrics, batch_size=batch_size)
 
+        # TODO: two-streams in training step or val step? training with loss_2?
         return loss
 
     def validation_step(self, batch, batch_idx):
