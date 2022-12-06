@@ -1,5 +1,6 @@
 root: /home/ssd/data
 gpus: [0,1,2,3]
+#gpus: [0]
 num_workers: 4
 
 net: slowfast
@@ -11,12 +12,11 @@ lr:
   Adam: 0.001
 lr_step_size: 30
 lr_policy: 'cosine'
-# TODO: add topK acc
 lr_gamma: 0.1
 wd: 1e-4
 optimizer: SGD
 momentum: 0.9
-# TODO: add warmup
+
 
 batch_size: 8
 epochs: 30
@@ -33,6 +33,4 @@ val_freq: 1
 T: 8
 tau: 8
 fps: 30
-num_clips: 10
-num_crops: 3
 alpha: 4

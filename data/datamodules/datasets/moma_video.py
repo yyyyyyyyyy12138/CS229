@@ -35,7 +35,7 @@ class MOMAVideoDataset(LabeledVideoDataset):
         elif split == "val":
             clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T * cfg.tau / cfg.fps, 1)
         else:
-            clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T*cfg.tau/cfg.fps, cfg.num_clips, cfg.num_crops)
+            clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T*cfg.tau/cfg.fps, 1)
 
         super().__init__(
             labeled_video_paths=dataset,

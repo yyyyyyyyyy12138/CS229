@@ -18,9 +18,7 @@ class TwoStreamModel(pl.LightningModule):
         )
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)
         self.acc_metric_top5 = torchmetrics.Accuracy(average='micro', top_k=5)
-        # TODO: micro? macro?
-        self.f1_metric = torchmetrics.F1Score(num_classes=num_classes)
-
+        self.f1_metric = torchmetrics.F1Score(num_classes=num_classes, average='macro')
 
     def test_step(self, batch, batch_idx):
         video_batch = batch['video_dataloader']
@@ -28,12 +26,12 @@ class TwoStreamModel(pl.LightningModule):
         inputs, labels = graph_batch
         batch_size = len(inputs)
 
-        slowfast_preds = self.slowfast.predit_step(video_batch, batch_idx)
-        graphnet_preds = self.graphnet.predit_step(graph_batch, batch_idx)
-        preds = torch.mean(torch.stack((slowfast_preds, graphnet_preds)))
-        acc1 = self.acc_metric_top1(preds, labels)
-        acc5 = self.acc_metric_top5(preds, labels)
-        f1 = self.f1_metric(preds, labels)
+        slowfast_logits = self.slowfast.predict_step(video_batch, batch_idx)
+        graphnet_logits = self.graphnet.predict_step(graph_batch, batch_idx)
+        logits = torch.mean(torch.stack((slowfast_logits, graphnet_logits)), dim=0)
+        acc1 = self.acc_metric_top1(logits, labels)
+        acc5 = self.acc_metric_top5(logits, labels)
+        f1 = self.f1_metric(logits, labels)
 
         # logging loss, accuracy, and f1 score
         metrics = {"test_twostream/acc1": acc1, "test_twostream/acc5": acc5, "test_twostream/f1": f1}

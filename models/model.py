@@ -16,7 +16,7 @@ class Model(pl.LightningModule):
         self.criterion = nn.CrossEntropyLoss()
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)
         self.acc_metric_top5 = torchmetrics.Accuracy(average='micro', top_k=5)
-        self.f1_metric = torchmetrics.F1Score(num_classes=num_classes,average='macro')
+        self.f1_metric = torchmetrics.F1Score(num_classes=num_classes, average='macro')
         self.cfg = cfg
 
     def on_train_epoch_start(self):
@@ -58,6 +58,7 @@ class Model(pl.LightningModule):
         logits = self.net(inputs)
 
         # get predicted class in one-stream
+        # TODO: fix
         preds = logits
         loss = self.criterion(logits, labels)
         acc1 = self.acc_metric_top1(preds, labels)
@@ -83,6 +84,7 @@ class Model(pl.LightningModule):
 
         #get predicted class
         preds = logits
+        # TODO: fix
         # preds = torch.argmax(logits, dim=1)
         acc1 = self.acc_metric_top1(preds, labels)
         acc5 = self.acc_metric_top5(preds, labels)
@@ -108,6 +110,7 @@ class Model(pl.LightningModule):
 
         #get predicted class
         preds = logits
+        # TODO: fix
         # preds = torch.argmax(logits, dim=1)
         acc1 = self.acc_metric_top1(preds, labels)
         acc5 = self.acc_metric_top5(preds, labels)
@@ -129,8 +132,8 @@ class Model(pl.LightningModule):
         logits = self.net(inputs)
 
         # get predicted class
-        preds = nn.functional.softmax(logits, dim=0)
-
-        return preds
+        softmax = nn.functional.softmax(logits, dim=0)
+        #TODO: return activity instnce ID
+        return softmax
 
 

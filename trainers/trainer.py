@@ -10,13 +10,23 @@ def get_trainer(cfg):
     wandb_logger.log_hyperparams(cfg)
 
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
+    # TODO: remember to change folder name when running new experiment!! especially for Resnet (no folder and path for it for now)
     if cfg.net == "slowfast":
-        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq, dirpath=os.path.join(cfg.root, "ckpt/slowfast"))
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
+                                              dirpath=os.path.join(cfg.root, "ckpt/slowfast1"),
+                                              save_last=True)
     elif cfg.net == "graphnet":
-        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq, dirpath=os.path.join(cfg.root, "ckpt/graphnet"))
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
+                                              dirpath=os.path.join(cfg.root, "ckpt/graphnet"),
+                                              save_last=True)
+    elif cfg.net == "resnet":
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
+                                              dirpath=os.path.join(cfg.root, "ckpt/resnet"),
+                                              save_last=True)
     else:
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
-                                              dirpath=os.path.join(cfg.root, "ckpt"))
+                                              dirpath=os.path.join(cfg.root, "ckpt"),
+                                              save_last=True)
 
     trainer = pl.Trainer(max_epochs=cfg.epochs,
                          accelerator='gpu',

@@ -1,5 +1,6 @@
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
+from pytorch_lightning.trainer.supporters import CombinedLoader
 from .transforms import get_transform
 from .datasets import MOMAFrameDataset, MOMAVideoDataset, MOMAGraphDataset
 
@@ -23,7 +24,8 @@ class TwoStreamMOMADataModule(pl.LightningDataModule):
         graph_dataloader = DataLoader(self.graph_test_dataset, batch_size=self.graph_cfg.batch_size,
                           shuffle=False, num_workers=self.graph_cfg.num_workers, pin_memory=True)
         dataloaders = {"video_dataloader": video_dataloader, "graph_dataloader": graph_dataloader}
-        return dataloaders
+        dataloader = CombinedLoader(dataloaders)
+        return dataloader
 
 
 class MOMADataModule(pl.LightningDataModule):
