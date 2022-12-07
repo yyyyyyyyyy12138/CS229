@@ -1,17 +1,20 @@
-import torch
 import torch.nn as nn
 import torch.optim as optim
-from .nets import get_lenet, get_resnet, get_slowfast, get_graphnet
+from .nets import get_lenet, get_resnet, get_slowfast, get_graphnet, get_mvit
 from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR
 import pytorch_lightning as pl
 import torchmetrics
-import os
 
 
 class Model(pl.LightningModule):
     def __init__(self, cfg, num_classes):
         super().__init__()
-        net_dict = {"resnet18": get_resnet, "lenet": get_lenet, "slowfast": get_slowfast, "graphnet": get_graphnet}
+        net_dict = {"resnet18": get_resnet,
+                    "lenet": get_lenet,
+                    "slowfast": get_slowfast,
+                    "graphnet": get_graphnet,
+                    "mvit": get_mvit}
+
         self.net = net_dict[cfg.net](num_classes, cfg)
         self.criterion = nn.CrossEntropyLoss()
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)
@@ -30,9 +33,11 @@ class Model(pl.LightningModule):
 
     def configure_optimizers(self):
         if self.cfg.optimizer == "SGD":
-            optimizer = optim.SGD(self.net.parameters(), lr=self.cfg.lr["SGD"], momentum=self.cfg.momentum, weight_decay=self.cfg.wd)
+            optimizer = optim.SGD(self.net.parameters(), lr=self.cfg.lr["SGD"], momentum=self.cfg.momentum,
+                                  weight_decay=self.cfg.wd["SGD"])
         elif self.cfg.optimizer == "Adam":
-            optimizer = optim.Adam(self.net.parameters(), lr=self.cfg.lr["Adam"], weight_decay=self.cfg.wd)
+            optimizer = optim.Adam(self.net.parameters(), lr=self.cfg.lr["Adam"],
+                                   weight_decay=self.cfg.wd["Adam"])
         else:
             raise NotImplementedError
 
@@ -47,7 +52,7 @@ class Model(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         # pass data
-        if self.cfg.net == "slowfast":
+        if self.cfg.net == "slowfast" or self.cfg.net == "mvit":
             inputs, labels = batch['video'], batch['cid']
             batch_size = len(inputs[0])
         else:  # image based network
@@ -57,13 +62,11 @@ class Model(pl.LightningModule):
         # performs an inference
         logits = self.net(inputs)
 
-        # get predicted class in one-stream
-        # TODO: fix
-        preds = logits
+        # Use logits to calculate loss and metrics
         loss = self.criterion(logits, labels)
-        acc1 = self.acc_metric_top1(preds, labels)
-        acc5 = self.acc_metric_top5(preds, labels)
-        f1 = self.f1_metric(preds, labels)
+        acc1 = self.acc_metric_top1(logits, labels)
+        acc5 = self.acc_metric_top5(logits, labels)
+        f1 = self.f1_metric(logits, labels)
 
         # logging loss, accuracy, and f1 score
         metrics = {"train/loss": loss, "train/acc1": acc1, "train/acc5": acc5, "train/f1": f1}
@@ -72,7 +75,7 @@ class Model(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        if self.cfg.net == "slowfast":
+        if self.cfg.net == "slowfast" or self.cfg.net == "mvit":
             inputs, labels = batch['video'], batch['cid']
             batch_size = len(inputs[0])
         else:  # image based network
@@ -82,13 +85,10 @@ class Model(pl.LightningModule):
         # performs an inference
         logits = self.net(inputs)
 
-        #get predicted class
-        preds = logits
-        # TODO: fix
-        # preds = torch.argmax(logits, dim=1)
-        acc1 = self.acc_metric_top1(preds, labels)
-        acc5 = self.acc_metric_top5(preds, labels)
-        f1 = self.f1_metric(preds, labels)
+        # Use logits to calculate metrics
+        acc1 = self.acc_metric_top1(logits, labels)
+        acc5 = self.acc_metric_top5(logits, labels)
+        f1 = self.f1_metric(logits, labels)
 
         # logging loss, accuracy, and f1 score
         metrics = {"val/acc1": acc1, "val/acc5": acc5, "val/f1": f1}
@@ -98,7 +98,7 @@ class Model(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         # TODO: add ensemble_method for metric
-        if self.cfg.net == "slowfast":
+        if self.cfg.net == "slowfast" or self.cfg.net == "mvit":
             inputs, labels = batch['video'], batch['cid']
             batch_size = len(inputs[0])
         else:  # image based network
@@ -108,13 +108,10 @@ class Model(pl.LightningModule):
         # performs an inference
         logits = self.net(inputs)
 
-        #get predicted class
-        preds = logits
-        # TODO: fix
-        # preds = torch.argmax(logits, dim=1)
-        acc1 = self.acc_metric_top1(preds, labels)
-        acc5 = self.acc_metric_top5(preds, labels)
-        f1 = self.f1_metric(preds, labels)
+        # Use logits to calculate metrics
+        acc1 = self.acc_metric_top1(logits, labels)
+        acc5 = self.acc_metric_top5(logits, labels)
+        f1 = self.f1_metric(logits, labels)
 
         # logging loss, accuracy, and f1 score
         metrics = {"test/acc1": acc1, "test/acc5": acc5, "test/f1": f1}
@@ -131,7 +128,7 @@ class Model(pl.LightningModule):
         # performs an inference
         logits = self.net(inputs)
 
-        # get predicted class
+        # turn to softmax for two-stream merge
         softmax = nn.functional.softmax(logits, dim=0)
         #TODO: return activity instnce ID
         return softmax

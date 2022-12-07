@@ -10,7 +10,7 @@ def get_trainer(cfg):
     wandb_logger.log_hyperparams(cfg)
 
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
-    # TODO: remember to change folder name when running new experiment!! especially for Resnet (no folder and path for it for now)
+    # TODO: remember to change folder name when running new experiment!!
     if cfg.net == "slowfast":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
                                               dirpath=os.path.join(cfg.root, "ckpt/slowfast1"),
@@ -22,6 +22,10 @@ def get_trainer(cfg):
     elif cfg.net == "resnet18":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
                                               dirpath=os.path.join(cfg.root, "ckpt/resnet2"),
+                                              save_last=True)
+    elif cfg.net == "mvit":
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
+                                              dirpath=os.path.join(cfg.root, "ckpt/mvit1"),
                                               save_last=True)
     else:
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,

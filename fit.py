@@ -5,9 +5,10 @@ from omegaconf import OmegaConf
 
 
 def main():
-    cfg = OmegaConf.load("configs/resnet.yaml")
+    cfg = OmegaConf.load("configs/mvit.yaml")
+    # get datamodule with Dataset
     data = get_data(cfg)
-
+    # get model with corresponding net
     model = Model(cfg, data.num_classes)
     trainer = get_trainer(cfg)
     trainer.fit(model,

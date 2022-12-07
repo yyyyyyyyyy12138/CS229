@@ -8,12 +8,12 @@ import torchmetrics
 class TwoStreamModel(pl.LightningModule):
     def __init__(self, video_cfg, graph_cfg, num_classes):
         super().__init__()
-        sf_ckpt_path = os.path.join(video_cfg.root, 'ckpt/slowfast', 'epoch=29-step=1080.ckpt')
-        self.slowfast = Model.load_from_checkpoint(
+        sf_ckpt_path = os.path.join(video_cfg.root, 'ckpt/slowfast1', 'epoch=29-step=1080.ckpt')
+        self.video_model = Model.load_from_checkpoint(
             checkpoint_path=sf_ckpt_path, cfg=video_cfg, num_classes=num_classes
         )
         gn_ckpt_path = os.path.join(graph_cfg.root, 'ckpt/graphnet', 'epoch=19-step=1420.ckpt')
-        self.graphnet = Model.load_from_checkpoint(
+        self.graph_model = Model.load_from_checkpoint(
             checkpoint_path=gn_ckpt_path, cfg=graph_cfg, num_classes=num_classes
         )
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)
@@ -26,9 +26,9 @@ class TwoStreamModel(pl.LightningModule):
         inputs, labels = graph_batch
         batch_size = len(inputs)
 
-        slowfast_logits = self.slowfast.predict_step(video_batch, batch_idx)
-        graphnet_logits = self.graphnet.predict_step(graph_batch, batch_idx)
-        logits = torch.mean(torch.stack((slowfast_logits, graphnet_logits)), dim=0)
+        video_logits = self.slowfast.predict_step(video_batch, batch_idx)
+        graph_logits = self.graphnet.predict_step(graph_batch, batch_idx)
+        logits = torch.mean(torch.stack((video_logits, graph_logits)), dim=0)
         acc1 = self.acc_metric_top1(logits, labels)
         acc5 = self.acc_metric_top5(logits, labels)
         f1 = self.f1_metric(logits, labels)

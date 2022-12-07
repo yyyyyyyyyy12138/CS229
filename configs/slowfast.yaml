@@ -13,7 +13,9 @@ lr:
 lr_step_size: 30
 lr_policy: 'cosine'
 lr_gamma: 0.1
-wd: 1e-4
+wd:
+  SGD: 1e-4
+  Adam: 0.05
 optimizer: SGD
 momentum: 0.9
 

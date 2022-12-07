@@ -20,9 +20,9 @@ class TwoStreamMOMADataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         video_dataloader = DataLoader(self.video_test_dataset, batch_size=self.video_cfg.batch_size,
-                          shuffle=False, num_workers=self.video_cfg.num_workers, pin_memory=True)
+                                      shuffle=False, num_workers=self.video_cfg.num_workers, pin_memory=True)
         graph_dataloader = DataLoader(self.graph_test_dataset, batch_size=self.graph_cfg.batch_size,
-                          shuffle=False, num_workers=self.graph_cfg.num_workers, pin_memory=True)
+                                      shuffle=False, num_workers=self.graph_cfg.num_workers, pin_memory=True)
         dataloaders = {"video_dataloader": video_dataloader, "graph_dataloader": graph_dataloader}
         dataloader = CombinedLoader(dataloaders)
         return dataloader
