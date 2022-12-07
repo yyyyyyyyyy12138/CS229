@@ -1,7 +1,7 @@
 import os
 import momaapi
 from pytorchvideo.data import LabeledVideoDataset, make_clip_sampler
-from torch.utils.data import DistributedSampler, RandomSampler
+from torch.utils.data import DistributedSampler, RandomSampler, SequentialSampler
 
 
 class MOMAVideoDataset(LabeledVideoDataset):
@@ -32,15 +32,20 @@ class MOMAVideoDataset(LabeledVideoDataset):
 
         if split == "train":
             clip_sampler = make_clip_sampler("random", cfg.T*cfg.tau/cfg.fps)
+            video_sampler = DistributedSampler if len(cfg.gpus) > 1 else RandomSampler
+            # manually turn randomsampler off when run fit_twostream.py
+            # video_sampler = SequentialSampler
         elif split == "val":
-            clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T * cfg.tau / cfg.fps, 1)
+            clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T * cfg.tau/cfg.fps, 1)
+            video_sampler = SequentialSampler
         else:
             clip_sampler = make_clip_sampler("constant_clips_per_video", cfg.T*cfg.tau/cfg.fps, 1)
+            video_sampler = SequentialSampler
 
         super().__init__(
             labeled_video_paths=dataset,
             clip_sampler=clip_sampler,
-            video_sampler=DistributedSampler if len(cfg.gpus) > 1 else RandomSampler,
+            video_sampler=video_sampler,
             transform=transform,
             decode_audio=False
         )

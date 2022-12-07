@@ -20,7 +20,7 @@ momentum: 0.9
 
 batch_size: 16
 epochs: 50
-pretrain: True
+pretrain: False
 frozen: False
 debug: False
 debug_size: 4

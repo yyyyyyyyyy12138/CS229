@@ -1,8 +1,9 @@
 root: /home/ssd/data
 gpus: [0]
-num_workers: 4
+num_workers: 1
 
 net: 'twostream'
+fusion: 'softmax' # softmax, logits, finetune
 epochs: 30
 batch_size: 8
 debug: False
@@ -12,3 +13,16 @@ log_freq: 10
 ckpt_freq: 2
 ckpt_load: False
 val_freq: 1
+
+
+lr:
+  SGD: 0.05
+  Adam: 0.001
+lr_step_size: 30
+lr_policy: 'cosine'
+lr_gamma: 0.1
+wd:
+  SGD: 1e-4
+  Adam: 0.05
+optimizer: SGD
+momentum: 0.9

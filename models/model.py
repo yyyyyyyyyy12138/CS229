@@ -97,7 +97,6 @@ class Model(pl.LightningModule):
         return metrics
 
     def test_step(self, batch, batch_idx):
-        # TODO: add ensemble_method for metric
         if self.cfg.net == "slowfast" or self.cfg.net == "mvit":
             inputs, labels = batch['video'], batch['cid']
             batch_size = len(inputs[0])
@@ -121,16 +120,15 @@ class Model(pl.LightningModule):
 
     def predict_step(self, batch, batch_idx):
         if self.cfg.net == "slowfast":
-            inputs = batch['video']
-        else:  # image based network
-            inputs = batch[0]
+            inputs, labels = batch['video'], batch['cid']
+
+        else:  # graph network
+            inputs, labels = batch
 
         # performs an inference
         logits = self.net(inputs)
 
         # turn to softmax for two-stream merge
-        softmax = nn.functional.softmax(logits, dim=0)
-        #TODO: return activity instnce ID
-        return softmax
+        softmax = nn.functional.softmax(logits, dim=1)
 
-
+        return {"logits": logits, "softmax": softmax}

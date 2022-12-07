@@ -9,6 +9,8 @@ def main():
     graph_cfg = OmegaConf.load("configs/graphnet.yaml")
     twostream_cfg = OmegaConf.load("configs/twostream.yaml")
 
+    twostream_cfg.fusion = "finetune"
+
     video_cfg.gpus = twostream_cfg.gpus
     graph_cfg.gpus = twostream_cfg.gpus
     video_cfg.batch_size = twostream_cfg.batch_size
@@ -19,7 +21,8 @@ def main():
     data = get_data_twostream(video_cfg, graph_cfg)
     model = TwoStreamModel(video_cfg, graph_cfg, twostream_cfg, data.num_classes)
     trainer = get_trainer(twostream_cfg)
-    trainer.test(model=model, datamodule=data)
+    trainer.fit(model=model, datamodule=data)
+    # no need to run test.py under this situation, just check val acc/f1
 
 
 if __name__ == '__main__':
