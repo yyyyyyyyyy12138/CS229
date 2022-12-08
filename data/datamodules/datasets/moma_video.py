@@ -28,7 +28,7 @@ class MOMAVideoDataset(LabeledVideoDataset):
         cids = [ann_act.cid for ann_act in anns_acts]
 
         # get dataset: list of tuples[(video path, dict{"cid": labels})]
-        dataset = [(path, {"cid": cid}) for path, cid in zip(paths, cids)]
+        dataset = [(path, {"cid": cid, "act_id": act_id}) for path, cid, act_id in zip(paths, cids, act_ids)]
 
         if split == "train":
             clip_sampler = make_clip_sampler("random", cfg.T*cfg.tau/cfg.fps)

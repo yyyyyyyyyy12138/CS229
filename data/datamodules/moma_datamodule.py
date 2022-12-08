@@ -2,7 +2,7 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from pytorch_lightning.trainer.supporters import CombinedLoader
 from .transforms import get_transform
-from .datasets import MOMAFrameDataset, MOMAVideoDataset, MOMAGraphDataset
+from .datasets import MOMAFrameDataset, MOMAVideoDataset, MOMAGraphDataset, MOMAObjectDataset
 
 
 class TwoStreamMOMADataModule(pl.LightningDataModule):
@@ -78,6 +78,10 @@ class MOMADataModule(pl.LightningDataModule):
             self.train_dataset = MOMAGraphDataset(self.cfg.root, train=True)
             self.val_dataset = MOMAGraphDataset(self.cfg.root, train=False)
             self.test_dataset = MOMAGraphDataset(self.cfg.root, train=False)
+        elif self.cfg.model_base == "object":
+            self.train_dataset = MOMAObjectDataset(self.cfg.root, train=True)
+            self.val_dataset = MOMAObjectDataset(self.cfg.root, train=False)
+            self.test_dataset = MOMAObjectDataset(self.cfg.root, train=False)
         else:
             raise NotImplementedError
 

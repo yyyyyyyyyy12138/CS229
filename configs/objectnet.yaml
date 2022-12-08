@@ -1,11 +1,10 @@
 root: /home/ssd/data
-# gpus: [0,1,2,3]
 gpus: [0]
-num_workers: 4
+num_workers: 2
 
-net: slowfast
+net: objectnet
 dataset: moma
-model_base: "video"
+model_base: "object"
 
 lr:
   SGD: 0.05
@@ -18,21 +17,17 @@ wd:
   Adam: 0.05
 optimizer: SGD
 momentum: 0.9
+# TODO: add warmup
 
 
-batch_size: 8
-epochs: 30
-pretrain: True
+batch_size: 16
+epochs: 20
+pretrain: False
 frozen: False
-debug: False
+debug: True
 debug_size: 4
 
 log_freq: 10
 ckpt_freq: 2
 ckpt_load: False
 val_freq: 1
-
-T: 8
-tau: 8
-fps: 30
-alpha: 4

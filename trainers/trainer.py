@@ -13,7 +13,7 @@ def get_trainer(cfg):
     # TODO: remember to change folder name when running new experiment!!
     if cfg.net == "slowfast":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
-                                              dirpath=os.path.join(cfg.root, "ckpt/slowfast1"),
+                                              dirpath=os.path.join(cfg.root, "ckpt/slowfast0"),
                                               save_last=True)
     elif cfg.net == "graphnet":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
@@ -30,6 +30,10 @@ def get_trainer(cfg):
     elif cfg.net == "twostream":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
                                               dirpath=os.path.join(cfg.root, "ckpt/twostream"),
+                                              save_last=True)
+    elif cfg.net == "objectnet":
+        checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
+                                              dirpath=os.path.join(cfg.root, "ckpt/objectnet1"),
                                               save_last=True)
     else:
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,

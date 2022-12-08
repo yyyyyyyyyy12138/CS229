@@ -22,7 +22,6 @@ class MOMAGraphDataset(Dataset):
         else:
             act_ids = moma.get_ids_act(split="test")
         self.act_ids = act_ids
-
         # get annotation of activities
         anns_acts = moma.get_anns_act(act_ids)
         # get corresponding class IDs for each activity in train/test set
@@ -32,7 +31,7 @@ class MOMAGraphDataset(Dataset):
         self.moma = moma
 
     def __len__(self):
-        return len(self.cids)
+            return len(self.cids)
 
     def __getitem__(self, idx):
         act_id = self.act_ids[idx]

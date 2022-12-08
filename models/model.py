@@ -1,10 +1,10 @@
 import torch.nn as nn
 import torch.optim as optim
-from .nets import get_lenet, get_resnet, get_slowfast, get_graphnet, get_mvit
+from .nets import get_lenet, get_resnet, get_slowfast, get_graphnet, get_mvit, get_objectnet
 from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR
 import pytorch_lightning as pl
 import torchmetrics
-
+import torch
 
 class Model(pl.LightningModule):
     def __init__(self, cfg, num_classes):
@@ -13,7 +13,8 @@ class Model(pl.LightningModule):
                     "lenet": get_lenet,
                     "slowfast": get_slowfast,
                     "graphnet": get_graphnet,
-                    "mvit": get_mvit}
+                    "mvit": get_mvit,
+                    "objectnet": get_objectnet}
 
         self.net = net_dict[cfg.net](num_classes, cfg)
         self.criterion = nn.CrossEntropyLoss()
@@ -98,7 +99,7 @@ class Model(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         if self.cfg.net == "slowfast" or self.cfg.net == "mvit":
-            inputs, labels = batch['video'], batch['cid']
+            inputs, labels, act_id = batch['video'], batch['cid'], batch['act_id']
             batch_size = len(inputs[0])
         else:  # image based network
             inputs, labels = batch
@@ -106,6 +107,11 @@ class Model(pl.LightningModule):
 
         # performs an inference
         logits = self.net(inputs)
+        preds = torch.argmax(logits, dim=1)
+        for i in range(len(logits)):
+            print("\n")
+            print("pred=", preds[i], "label=", labels[i], "act_id=", act_id[i])
+            print("\n")
 
         # Use logits to calculate metrics
         acc1 = self.acc_metric_top1(logits, labels)

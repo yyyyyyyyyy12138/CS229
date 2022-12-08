@@ -20,5 +20,8 @@ def get_transform(cfg):
     elif cfg.net == "graphnet":
         return None, None, None
 
+    elif cfg.net == "objectnet":
+        return None, None, None
+
     else:
         raise NotImplementedError
