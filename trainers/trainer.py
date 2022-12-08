@@ -25,7 +25,7 @@ def get_trainer(cfg):
                                               save_last=True)
     elif cfg.net == "mvit":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
-                                              dirpath=os.path.join(cfg.root, "ckpt/mvit1"),
+                                              dirpath=os.path.join(cfg.root, "ckpt/mvit2"),
                                               save_last=True)
     elif cfg.net == "twostream":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,

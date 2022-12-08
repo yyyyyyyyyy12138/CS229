@@ -1,6 +1,6 @@
 root: /home/ssd/data
-#gpus: [0,1,2,3]
-gpus: [0]
+gpus: [0,1,2,3]
+#gpus: [0]
 num_workers: 4
 
 net: mvit
@@ -10,14 +10,14 @@ model_base: "video"
 # TODO: learning rate to revise based on batch size/epoches?
 lr:
   SGD: 0.05
-  Adam: 0.0002
+  adamw: 0.0002
 lr_step_size: 30
 lr_policy: 'cosine'
 lr_gamma: 0.1
 wd:
   SGD: 1e-4
-  Adam: 0.05
-optimizer: Adam
+  adamw: 0.05
+optimizer: adamw
 momentum: 0.9
 
 

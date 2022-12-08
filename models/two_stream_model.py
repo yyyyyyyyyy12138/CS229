@@ -44,6 +44,9 @@ class TwoStreamModel(pl.LightningModule):
         elif self.cfg.optimizer == "Adam":
             optimizer = optim.Adam(self.classifier.parameters(), lr=self.cfg.lr["Adam"],
                                    weight_decay=self.cfg.wd["Adam"])
+        elif self.cfg.optimizer == "adamw":
+            optimizer = optim.AdamW(self.net.parameters(), lr=self.cfg.lr["adamw"],
+                                   weight_decay=self.cfg.wd["adamw"])
         else:
             raise NotImplementedError
 

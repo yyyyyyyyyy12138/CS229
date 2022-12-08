@@ -5,7 +5,7 @@ from omegaconf import OmegaConf
 
 
 def main():
-    cfg = OmegaConf.load("configs/objectnet.yaml")
+    cfg = OmegaConf.load("configs/mvit.yaml")
     # get datamodule with Dataset
     data = get_data(cfg)
     # get model with corresponding net
