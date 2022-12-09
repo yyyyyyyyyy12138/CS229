@@ -2,7 +2,9 @@ from omegaconf import OmegaConf
 from models import TwoStreamModel, Model
 from trainers import get_trainer
 from data import get_data_twostream, get_data
-import os
+import torchmetrics
+import torch
+
 
 def main():
     video_cfg = OmegaConf.load("configs/slowfast.yaml")
@@ -21,6 +23,19 @@ def main():
     trainer = get_trainer(twostream_cfg)
     trainer.test(model=model, datamodule=data)
 
+    # cnames = ['awards ceremony', 'babysitting', 'basketball game', 'beauty salon service', 'bike lesson',
+    #           'car racing pitstop', 'dining', 'drive-thru ordering', 'field sobriety test', 'firefighting',
+    #           'frisbee game',
+    #           'haircut', 'marriage proposal', 'medical injection', 'physical therapy', 'piano lesson',
+    #           'reception service',
+    #           'security screening', 'soccer game', 'table tennis game']
+
+
+if __name__ == '__main__':
+    main()
+
+
+
 # def main():
 #     video_cfg = OmegaConf.load("configs/slowfast.yaml")
 #
@@ -30,7 +45,3 @@ def main():
 #     trainer.test(model=model, datamodule=data,
 #                  ckpt_path=os.path.join(video_cfg.root, 'ckpt/slowfast1', 'epoch=29-step=1080.ckpt')
 #                  )
-
-
-if __name__ == '__main__':
-    main()

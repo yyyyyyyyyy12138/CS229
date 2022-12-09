@@ -6,7 +6,7 @@ from data import get_data_twostream
 
 def main():
     video_cfg = OmegaConf.load("configs/slowfast.yaml")
-    object_cfg = OmegaConf.load("configs/object.yaml")
+    object_cfg = OmegaConf.load("configs/objectnet.yaml")
     twostream_cfg = OmegaConf.load("configs/twostream.yaml")
 
     twostream_cfg.fusion = "finetune"

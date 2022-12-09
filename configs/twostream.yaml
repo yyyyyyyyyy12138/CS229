@@ -1,5 +1,5 @@
 root: /home/ssd/data
-gpus: [0]
+gpus: [1]
 num_workers: 1
 
 net: 'twostream'
@@ -16,7 +16,7 @@ val_freq: 1
 
 
 lr:
-  SGD: 0.05
+  SGD: 0.0005
   Adam: 0.001
 lr_step_size: 30
 lr_policy: 'cosine'

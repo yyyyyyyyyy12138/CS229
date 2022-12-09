@@ -25,11 +25,11 @@ def get_trainer(cfg):
                                               save_last=True)
     elif cfg.net == "mvit":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
-                                              dirpath=os.path.join(cfg.root, "ckpt/mvit2"),
+                                              dirpath=os.path.join(cfg.root, "ckpt/mvit0"),
                                               save_last=True)
     elif cfg.net == "twostream":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,
-                                              dirpath=os.path.join(cfg.root, "ckpt/twostream"),
+                                              dirpath=os.path.join(cfg.root, "ckpt/twostream_p"),
                                               save_last=True)
     elif cfg.net == "objectnet":
         checkpoint_callback = ModelCheckpoint(every_n_epochs=cfg.ckpt_freq,

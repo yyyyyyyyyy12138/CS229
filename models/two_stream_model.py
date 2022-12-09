@@ -12,7 +12,7 @@ import torch.optim as optim
 class TwoStreamModel(pl.LightningModule):
     def __init__(self, video_cfg, object_cfg, twostream_cfg, num_classes):
         super().__init__()
-        video_ckpt_path = os.path.join(video_cfg.root, 'ckpt/slowfast1', 'epoch=29-step=1080.ckpt')
+        video_ckpt_path = os.path.join(video_cfg.root, 'ckpt/slowfast1', 'last.ckpt')
         self.video_model = Model.load_from_checkpoint(
             checkpoint_path=video_ckpt_path, cfg=video_cfg, num_classes=num_classes
         )
@@ -30,10 +30,12 @@ class TwoStreamModel(pl.LightningModule):
         self.acc_metric_top1 = torchmetrics.Accuracy(average='micro', top_k=1)
         self.acc_metric_top5 = torchmetrics.Accuracy(average='micro', top_k=5)
         self.f1_metric = torchmetrics.F1Score(num_classes=num_classes, average='macro')
+
         self.criterion = nn.CrossEntropyLoss()
 
         # all cfg refer to twostream afterward
         self.cfg = twostream_cfg
+        # self.result = {"labels": [], "preds": []}
 
     def configure_optimizers(self):
         assert self.cfg.fusion == "finetune"
@@ -158,5 +160,11 @@ class TwoStreamModel(pl.LightningModule):
                              "test_twostream/f1": twostream_f1}
         metrics = {**metrics_video, **metrics_object, **metrics_twostream}
         self.log_dict(metrics, batch_size=batch_size, on_step=True, on_epoch=True)
+        # for ROC curves
+        # labels = labels.cpu().detach().numpy()
+        # predictions = torch.argmax(twostream_output, dim=1).cpu().detach().numpy()
+        #
+        # self.result["labels"].extend(labels)
+        # self.result["preds"].extend(predictions)
 
         return metrics
