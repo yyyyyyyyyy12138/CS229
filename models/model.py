@@ -110,11 +110,13 @@ class Model(pl.LightningModule):
 
         # performs an inference
         logits = self.net(inputs)
-        preds = torch.argmax(logits, dim=1)
-        for i in range(len(logits)):
-            print("\n")
-            print("pred=", preds[i], "label=", labels[i], "act_id=", act_id[i])
-            print("\n")
+
+        # For error analysis:
+        # preds = torch.argmax(logits, dim=1)
+        # for i in range(len(logits)):
+        #     print("\n")
+        #     print("pred=", preds[i], "label=", labels[i], "act_id=", act_id[i])
+        #     print("\n")
 
         # Use logits to calculate metrics
         acc1 = self.acc_metric_top1(logits, labels)

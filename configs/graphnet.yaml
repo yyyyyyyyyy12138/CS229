@@ -1,5 +1,5 @@
 root: /home/ssd/data
-gpus: [0]
+gpus: [1]
 num_workers: 2
 
 net: graphnet

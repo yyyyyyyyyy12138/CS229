@@ -31,7 +31,7 @@ class MOMAGraphDataset(Dataset):
         self.moma = moma
 
     def __len__(self):
-            return len(self.cids)
+        return len(self.cids)
 
     def __getitem__(self, idx):
         act_id = self.act_ids[idx]

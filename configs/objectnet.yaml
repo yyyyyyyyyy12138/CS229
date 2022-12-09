@@ -7,7 +7,7 @@ dataset: moma
 model_base: "object"
 
 lr:
-  SGD: 0.05
+  SGD: 0.0005
   Adam: 0.001
 lr_step_size: 30
 lr_policy: 'cosine'
@@ -24,7 +24,7 @@ batch_size: 16
 epochs: 20
 pretrain: False
 frozen: False
-debug: True
+debug: False
 debug_size: 4
 
 log_freq: 10

@@ -10,7 +10,7 @@ import torch.optim as optim
 
 
 class TwoStreamModel(pl.LightningModule):
-    def __init__(self, video_cfg, graph_cfg, twostream_cfg, num_classes):
+    def __init__(self, video_cfg, object_cfg, twostream_cfg, num_classes):
         super().__init__()
         video_ckpt_path = os.path.join(video_cfg.root, 'ckpt/slowfast1', 'epoch=29-step=1080.ckpt')
         self.video_model = Model.load_from_checkpoint(
@@ -18,11 +18,11 @@ class TwoStreamModel(pl.LightningModule):
         )
         self.video_model.freeze()
 
-        graph_ckpt_path = os.path.join(graph_cfg.root, 'ckpt/graphnet', 'epoch=19-step=1420.ckpt')
-        self.graph_model = Model.load_from_checkpoint(
-            checkpoint_path=graph_ckpt_path, cfg=graph_cfg, num_classes=num_classes
+        object_ckpt_path = os.path.join(object_cfg.root, 'ckpt/objectnet1', 'epoch=19-step=1420.ckpt')
+        self.object_model = Model.load_from_checkpoint(
+            checkpoint_path=object_ckpt_path, cfg=object_cfg, num_classes=num_classes
         )
-        self.graph_model.freeze()
+        self.object_model.freeze()
 
         if twostream_cfg.fusion == "finetune":
             self.classifier = get_twostreamnet(num_classes, twostream_cfg)
@@ -63,19 +63,19 @@ class TwoStreamModel(pl.LightningModule):
         assert self.cfg.fusion == "finetune"
 
         video_batch = batch['video']
-        graph_batch = batch['graph']
-        inputs_graph, labels_graph = graph_batch
+        object_batch = batch['object']
+        inputs_object, labels_object = object_batch
         inputs_video, labels_video = video_batch['video'], video_batch['cid']
 
-        assert torch.equal(labels_graph, labels_video)
-        labels = labels_graph
+        assert torch.equal(labels_object, labels_video)
+        labels = labels_object
 
-        batch_size = len(inputs_graph)
+        batch_size = len(inputs_object)
 
         video_logits = self.video_model.predict_step(video_batch, batch_idx)["logits"]
-        graph_logits = self.graph_model.predict_step(graph_batch, batch_idx)["logits"]
+        object_logits = self.object_model.predict_step(object_batch, batch_idx)["logits"]
 
-        logits = torch.cat((video_logits, graph_logits), dim=1)
+        logits = torch.cat((video_logits, object_logits), dim=1)
         # here: net == classifier
         logits = self.classifier(logits)
 
@@ -95,19 +95,19 @@ class TwoStreamModel(pl.LightningModule):
         assert self.cfg.fusion == "finetune"
 
         video_batch = batch['video']
-        graph_batch = batch['graph']
-        inputs_graph, labels_graph = graph_batch
+        object_batch = batch['object']
+        inputs_object, labels_object = object_batch
         inputs_video, labels_video = video_batch['video'], video_batch['cid']
 
-        assert torch.equal(labels_graph, labels_video)
-        labels = labels_graph
+        assert torch.equal(labels_object, labels_video)
+        labels = labels_object
 
-        batch_size = len(inputs_graph)
+        batch_size = len(inputs_object)
 
         video_logits = self.video_model.predict_step(video_batch, batch_idx)["logits"]
-        graph_logits = self.graph_model.predict_step(graph_batch, batch_idx)["logits"]
+        object_logits = self.object_model.predict_step(object_batch, batch_idx)["logits"]
 
-        logits = torch.cat((video_logits, graph_logits), dim=1)
+        logits = torch.cat((video_logits, object_logits), dim=1)
         logits = self.classifier(logits)
 
         # Use logits to calculate metrics
@@ -123,28 +123,28 @@ class TwoStreamModel(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         video_batch = batch['video']
-        graph_batch = batch['graph']
-        inputs_graph, labels_graph = graph_batch
+        object_batch = batch['object']
+        inputs_object, labels_object = object_batch
         inputs_video, labels_video = video_batch['video'], video_batch['cid']
 
-        assert torch.equal(labels_graph, labels_video)
-        labels = labels_graph
+        assert torch.equal(labels_object, labels_video)
+        labels = labels_object
 
-        batch_size = len(inputs_graph)
+        batch_size = len(inputs_object)
 
         video_output = self.video_model.predict_step(video_batch, batch_idx)
-        graph_output = self.graph_model.predict_step(graph_batch, batch_idx)
+        object_output = self.object_model.predict_step(object_batch, batch_idx)
         video_output = video_output[self.cfg.fusion]
-        graph_output = graph_output[self.cfg.fusion]
-        twostream_output = torch.mean(torch.stack((video_output, graph_output)), dim=0)
+        object_output = object_output[self.cfg.fusion]
+        twostream_output = torch.mean(torch.stack((video_output, object_output)), dim=0)
 
         video_acc1 = self.acc_metric_top1(video_output, labels)
         video_acc5 = self.acc_metric_top5(video_output, labels)
         video_f1 = self.f1_metric(video_output, labels)
 
-        graph_acc1 = self.acc_metric_top1(graph_output, labels)
-        graph_acc5 = self.acc_metric_top5(graph_output, labels)
-        graph_f1 = self.f1_metric(graph_output, labels)
+        object_acc1 = self.acc_metric_top1(object_output, labels)
+        object_acc5 = self.acc_metric_top5(object_output, labels)
+        object_f1 = self.f1_metric(object_output, labels)
 
         twostream_acc1 = self.acc_metric_top1(twostream_output, labels)
         twostream_acc5 = self.acc_metric_top5(twostream_output, labels)
@@ -152,11 +152,11 @@ class TwoStreamModel(pl.LightningModule):
 
         # logging loss, accuracy, and f1 score
         metrics_video = {"test_video/acc1": video_acc1, "test_video/acc5": video_acc5, "test_video/f1": video_f1}
-        metrics_graph = {"test_graph/acc1": graph_acc1, "test_graph/acc5": graph_acc5, "test_graph/f1": graph_f1}
+        metrics_object = {"test_object/acc1": object_acc1, "test_object/acc5": object_acc5, "test_object/f1": object_f1}
         metrics_twostream = {"test_twostream/acc1": twostream_acc1,
                              "test_twostream/acc5": twostream_acc5,
                              "test_twostream/f1": twostream_f1}
-        metrics = {**metrics_video, **metrics_graph, **metrics_twostream}
+        metrics = {**metrics_video, **metrics_object, **metrics_twostream}
         self.log_dict(metrics, batch_size=batch_size, on_step=True, on_epoch=True)
 
         return metrics
